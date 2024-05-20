@@ -1,0 +1,28 @@
+# Archivos y directorios generados automáticamente
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entornos virtuales (por ejemplo, virtualenv, pipenv, etc.)
+venv/
+env/
+.env/
+
+# Archivos de registro y caché
+*.log
+logs/
+*.swp
+.DS_Store
+
+# Archivos de configuración específicos de IDEs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Dependencias y paquetes de Python
+*.egg-info/
+dist/
+build/
+
