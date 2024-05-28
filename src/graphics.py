@@ -1,0 +1,1 @@
+# Módulo para la representación gráfica del juego

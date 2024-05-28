@@ -1,0 +1,1 @@
+# Módulo para manejar la entrada del usuario (teclado, ratón, etc.)
