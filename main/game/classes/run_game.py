@@ -1,49 +1,18 @@
-import pygame
 import sys
 from game.definitions.color_definitions import Colors
 from game.definitions.global_definitions import GlobalDefinitions
 from game.classes.engine import GUI, GUIText, GUIRect, Color
-
+from tkinter import Tk, Canvas
+import tkinter as tk
 class GameTetris3D:
     def __init__(self, screen):
         self.screen = screen
         self.score = 0
         self.running = False
-        self.title_font = pygame.font.SysFont(None, 55)  
-        self.button_rect = pygame.Rect(0, 0, 100, 50)  
         self.button_rect.center = (self.screen.get_width() / 2, self.screen.get_height() / 2)
-        self.exit_button_rect = pygame.Rect(self.screen.get_width() - 110, self.screen.get_height() - 60, 100, 50) 
-        self.button_font = pygame.font.SysFont(None, 24)
         self.global_variables = GlobalDefinitions()
 
-    def runGame(self):
-        self.running = True
-        while self.running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif self.handle_events(event):
-                    self.running = False
-            self.draw()
-            pygame.display.flip()
 
-    def draw(self):
-        self.screen.fill(Colors.BLACK)
-        title = self.title_font.render('Tetris 3D', True, Colors.WHITE)
-        title_rect = title.get_rect(center=(self.screen.get_width() / 2, 60))  
-        self.screen.blit(title, title_rect)
-        pygame.draw.rect(self.screen, Colors.RED, self.exit_button_rect)  
-        exit_text = self.button_font.render('Salir', True, Colors.WHITE)  
-        exit_text_rect = exit_text.get_rect(center=self.exit_button_rect.center) 
-        self.screen.blit(exit_text, exit_text_rect)  
-
-    def handle_events(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.exit_button_rect.collidepoint(event.pos): 
-                sys.exit()
-        return False
-    
     def initialize_game(self):
         self.global_variables.initialize_tiles()
 
@@ -101,7 +70,7 @@ class NewHighScore(Menu):
         frame.draw(canvas, **kwargs)
 
         head_space = 35
-        head = GUIText("New High Score!", w * 0.5, (h - fh) * 0.5 + head_space, 30, Color(100, 100, 100))
+        head = GUIText("New High Score!", w * 0.5, (h - fh) * 0.5 + head_space, 30, Color(250, 150, 150))
         head.draw(canvas, **kwargs)
 
         time_l = GUIText(self._text, w * 0.5, h * 0.5, 20, Color(100, 100, 100), GUIText.CENTER)
@@ -174,15 +143,27 @@ class StartGame(Menu):
     def __init__(self, game):
         self._game = game
         self._help = Help(self)
+        self.bool_button = True
 
     def draw(self, canvas, **kwargs):
         w, h = canvas.winfo_width(), canvas.winfo_height()
-        fw, fh = 440, 305
-        frame = GUIRect((w - fw) * 0.5, (h - fh) * 0.5, fw, fh, Color(250, 150, 150))
+        fw, fh = 550, 400
+        frame = GUIRect((w - fw) * 0.5, (h - fh) * 0.5, fw, fh, Color(0, 0, 0 ))
         frame.draw(canvas, **kwargs)
-        head = GUIText("Welcome to 3d Tetris!", w * 0.5, (h - fh) * 0.5 + 30, 30, Color(100, 100, 100))
+        head = GUIText("Tetris 3D Computación Visual 2024 - I", w * 0.5, (h - fh) * 0.5 + 30, 30, Color(255, 255, 255))
         head.draw(canvas, **kwargs)
-        text = GUIText("Current game level is %d (%s).\n\n"
+        if w != 1 and h != 1 :
+            buttonStartGame = tk.Button(canvas, text="A jugar",width=10, height=2)
+            buttonStartGame.place(x= w * 0.45, y=h  * 0.35  + 100)
+            buttonInstructions = tk.Button(canvas, text="Ver instrucciones",width=10, height=2, command= self.showInstruccions(canvas, **kwargs))
+            buttonInstructions.place(x=w * 0.45, y= h * 0.35 + 150)
+ 
+            
+    def showInstruccions(self,canvas, **kwargs):
+        print("entro a las instrucciones")
+        w, h = canvas.winfo_width(), canvas.winfo_height()
+        fh = 400
+        text = GUIText("El nivel actual del juego es%d (%s).\n\n"
                        "<S> Start the game\n"
                        "<1> Change game level to 1\n"
                        "<2> Change game level to 2\n"
@@ -190,7 +171,7 @@ class StartGame(Menu):
                        "<H> Display help (please read if\n"
                        "       it's your first time playing!)"
                        % (self._game.level()+1, StartGame.LEVEL_STR[self._game.level()])
-                       ,w * 0.5, (h - fh) * 0.5 + 180, 18, Color(100, 100, 100))
+                       ,w * 0.5, (h - fh) * 0.5 + 180, 18, Color(240, 220, 215))
         text.draw(canvas, **kwargs)
 
     def key_press(self, key):

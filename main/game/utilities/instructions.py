@@ -1,13 +1,9 @@
-import pygame
 from game.definitions.color_definitions import Colors
 
 class InstructionsScreen:
     def __init__(self, screen):
         self.screen = screen
-        self.title_font = pygame.font.SysFont(None, 70)  # Fuente más grande para el título
-        self.font = pygame.font.SysFont(None, 50)
         self.button_color = Colors.RED
-        self.button_rect = pygame.Rect(0, 0, 200, 50)
         self.button_rect.topleft = (20, screen.get_height() - 70)
         self.button_text = self.font.render('Regresar', True, Colors.BLACK)
         self.button_text_rect = self.button_text.get_rect(center=self.button_rect.center)
@@ -40,10 +36,5 @@ class InstructionsScreen:
 
             y_offset += 70 
 
-        pygame.draw.rect(self.screen, self.button_color, self.button_rect)
         self.screen.blit(self.button_text, self.button_text_rect)
 
-    def handle_events(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and self.button_rect.collidepoint(event.pos):
-            return True
-        return False

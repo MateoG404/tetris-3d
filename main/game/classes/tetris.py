@@ -25,7 +25,7 @@ class Game:
         # tkinter stuff
         self._root = tkinter.Tk()
         self._root.minsize(width, height)
-        self._root.title("Tetris, FPS: 0")
+        self._root.title("Tetris Computación Visual")
         self._frame = tkinter.Frame()
         self._frame.pack(fill=tkinter.BOTH, expand=True)
         self._canvas = tkinter.Canvas(self._frame)
@@ -234,9 +234,9 @@ class Game:
     def render_gui(self):
         # display score
         if self._running:
-            frame = GUIRect(50, 35, 100, 30, Color(200, 200, 200))
+            frame = GUIRect(50, 35, 100, 30, Color(0,0,0))
             self._engine.render_gui(frame)
-            text = GUIText("Score: %d" % self._score, 100, 50, 14, Color(0, 0, 0))
+            text = GUIText("Score: %d" % self._score, 100, 50, 14, Color(255, 255,255))
             self._engine.render_gui(text)
 
         # display menus

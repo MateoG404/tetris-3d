@@ -1,4 +1,3 @@
-import pygame
 
 class GlobalDefinitions:
     BOARD_SIZE = 4
@@ -25,7 +24,6 @@ class GlobalDefinitions:
         self.dT = 10.0
         self.tileData = []
         self.rectList = []
-        self.gamepad = pygame.display.set_mode((self.pad_width, self.pad_height))
         self.size = self.pad_width/2
     def setTileData(self,loc, i):
         x, y, z = loc

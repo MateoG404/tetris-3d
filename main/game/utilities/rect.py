@@ -1,5 +1,4 @@
 import math
-import pygame
 from game.definitions.color_definitions import Colors
 from game.definitions.global_definitions import GlobalDefinitions
 
