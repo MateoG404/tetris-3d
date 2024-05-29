@@ -7,25 +7,37 @@ from game.data.highscore import HighScoreTable
 from game.classes.run_game import *
 from game.utilities.utils import *
 from game.definitions.global_definitions import GlobalDefinitions
+from game.definitions.assets import SHAPES, COLORS
 import os 
 
 class Game:
+    BORAD_SIZE = 4
+    BOARD_HEIGHT = 14
+
+    LEVEL_TICK_TIME = (0.7, 0.5, 0.2)
+    LEVEL_SCORE_FACT = (1, 2, 3)
+
+    CAM_DIST = 22
+    CAM_HEIGHT = 18
+    CAM_PITCH = 0.5
+    sub_path = "data/hs.csv"
+    HS_FILE =  os.path.join(os.path.dirname(os.path.dirname( os.path.abspath(__file__))), sub_path) 
+
+    MOVE_MAP = ((-1, 0), (0, -1), (1, 0), (0, 1))
+    PITCH_ROLL_MAP = ((1, -1), (0, -1), (1, 1), (0, 1))
 
     def __init__(self, width, height):
-        sub_path = "data/hs.csv"
-        self.hs_file_path = os.path.join(os.path.dirname(os.path.dirname( os.path.abspath(__file__))), sub_path)
         self.init_screen(width, height)
         self.init_control()
         self.init_board()
         self.init_game()
         self.init_menus()
-        self.assets = Assets()
 
     def init_screen(self, width, height):
         # tkinter stuff
         self._root = tkinter.Tk()
         self._root.minsize(width, height)
-        self._root.title("Tetris Computación Visual")
+        self._root.title("Tetris, FPS: 0")
         self._frame = tkinter.Frame()
         self._frame.pack(fill=tkinter.BOTH, expand=True)
         self._canvas = tkinter.Canvas(self._frame)
@@ -35,8 +47,8 @@ class Game:
         self._engine = Engine(self._canvas)
 
         # cam stuff
-        self._board_center_X = np.floor(GlobalDefinitions.BOARD_SIZE  * 0.5)
-        self._board_center_Z = np.floor(GlobalDefinitions.BOARD_SIZE  * 0.5)
+        self._board_center_X = np.floor(Game.BORAD_SIZE * 0.5)
+        self._board_center_Z = np.floor(Game.BORAD_SIZE * 0.5)
         self._dir = 0
         self.set_cam_angle(0.15)
         self._target_cam_angle = self._cam_angle
@@ -53,27 +65,27 @@ class Game:
 
     def init_board(self):
         # build board
-        self._board = np.zeros((GlobalDefinitions.BOARD_SIZE , GlobalDefinitions.BOARD_HEIGHT, GlobalDefinitions.BOARD_SIZE ))
+        self._board = np.zeros((Game.BORAD_SIZE, Game.BOARD_HEIGHT, Game.BORAD_SIZE))
         self._elements = list()
 
         # build floor
         color = Color(120, 120, 120)
         self._floor = list()
-        for i in range(GlobalDefinitions.BOARD_SIZE ):
+        for i in range(Game.BORAD_SIZE):
             self._floor.append(list())
-            for j in range(GlobalDefinitions.BOARD_SIZE ):
+            for j in range(Game.BORAD_SIZE):
                 pos = Position(i + 0.5, -0.5, j + 0.5, 0.0, 0.0, 0.0)
                 self._floor[i].append(Surface(pos, 1.0, 1.0, color))
 
         # build walls
-        self._walls = HBox(Position(GlobalDefinitions.BOARD_SIZE  * 0.5, GlobalDefinitions.BOARD_HEIGHT * 0.5 - 0.5, GlobalDefinitions.BOARD_SIZE  * 0.5, 0, 0, 0), GlobalDefinitions.BOARD_SIZE , GlobalDefinitions.BOARD_HEIGHT, GlobalDefinitions.BOARD_SIZE )
-        self._ceiling = HGrid(Position(GlobalDefinitions.BOARD_SIZE  * 0.5 + 0.5, GlobalDefinitions.BOARD_HEIGHT-0.5, GlobalDefinitions.BOARD_SIZE  * 0.5 + 0.5, 0, 0, 0), 1.0, 1.0, GlobalDefinitions.BOARD_SIZE +1, GlobalDefinitions.BOARD_SIZE +1)
+        self._walls = HBox(Position(Game.BORAD_SIZE * 0.5, Game.BOARD_HEIGHT * 0.5 - 0.5, Game.BORAD_SIZE * 0.5, 0, 0, 0), Game.BORAD_SIZE, Game.BOARD_HEIGHT, Game.BORAD_SIZE)
+        self._ceiling = HGrid(Position(Game.BORAD_SIZE * 0.5 + 0.5, Game.BOARD_HEIGHT-0.5, Game.BORAD_SIZE * 0.5 + 0.5, 0, 0, 0), 1.0, 1.0, Game.BORAD_SIZE+1, Game.BORAD_SIZE+1)
 
     def init_game(self):
         self.set_level(1)
         self._fast = False
         self._running = False
-        self._highscore = HighScoreTable(self.hs_file_path)
+        self._highscore = HighScoreTable(Game.HS_FILE)
 
     def init_menus(self):
         self._pause_menu = Pause()
@@ -83,7 +95,7 @@ class Game:
         self._menu = self._start_menu
 
     def reset_game(self):
-        self._board = np.zeros((GlobalDefinitions.BOARD_SIZE , GlobalDefinitions.BOARD_HEIGHT, GlobalDefinitions.BOARD_SIZE ))
+        self._board = np.zeros((Game.BORAD_SIZE, Game.BOARD_HEIGHT, Game.BORAD_SIZE))
         self._elements.clear()
         self._score = 0
         self.generate_shape()
@@ -126,34 +138,34 @@ class Game:
         if key.keysym == "space":
             self._fast = True
         if key.keysym == "Left":
-            dX, dZ = GlobalDefinitions.MOVE_MAP[(self._dir + 0) % 4]
+            dX, dZ = Game.MOVE_MAP[(self._dir + 0) % 4]
             self.move(dX, 0, dZ)
         if key.keysym == "Down":
-            dX, dZ = GlobalDefinitions.MOVE_MAP[(self._dir + 1) % 4]
+            dX, dZ = Game.MOVE_MAP[(self._dir + 1) % 4]
             self.move(dX, 0, dZ)
         if key.keysym == "Right":
-            dX, dZ = GlobalDefinitions.MOVE_MAP[(self._dir + 2) % 4]
+            dX, dZ = Game.MOVE_MAP[(self._dir + 2) % 4]
             self.move(dX, 0, dZ)
         if key.keysym == "Up":
-            dX, dZ = GlobalDefinitions.MOVE_MAP[(self._dir + 3) % 4]
+            dX, dZ = Game.MOVE_MAP[(self._dir + 3) % 4]
             self.move(dX, 0, dZ)
 
         # game rotation keys
         elif key.char == 's':
-            ax, dr = GlobalDefinitions.PITCH_ROLL_MAP[(self._dir + 0) % 4]
+            ax, dr = Game.PITCH_ROLL_MAP[(self._dir + 0) % 4]
             self.rotate(ax, dr)
         if key.char == 'w':
-            ax, dr = GlobalDefinitions.PITCH_ROLL_MAP[(self._dir + 2) % 4]
+            ax, dr = Game.PITCH_ROLL_MAP[(self._dir + 2) % 4]
             self.rotate(ax, dr)
         elif key.char == 'a':
             self.rotate(2, -1)
         elif key.char == 'd':
             self.rotate(2, 1)
         if key.char == 'q':
-            ax, dr = GlobalDefinitions.PITCH_ROLL_MAP[(self._dir + 3) % 4]
+            ax, dr = Game.PITCH_ROLL_MAP[(self._dir + 3) % 4]
             self.rotate(ax, dr)
         elif key.char == 'e':
-            ax, dr = GlobalDefinitions.PITCH_ROLL_MAP[(self._dir + 1) % 4]
+            ax, dr = Game.PITCH_ROLL_MAP[(self._dir + 1) % 4]
             self.rotate(ax, dr)
 
         # if key.char == 'w':
@@ -170,9 +182,9 @@ class Game:
             self._fast = False
 
     def set_cam_angle(self, a):
-        cam_X = GlobalDefinitions.CAM_DIST * np.cos(a - 0.5 * np.pi) + self._board_center_X
-        cam_Z = GlobalDefinitions.CAM_DIST * np.sin(a - 0.5 * np.pi) + self._board_center_Z
-        self._engine.set_cam(cam_X, GlobalDefinitions.CAM_HEIGHT, cam_Z, -a, GlobalDefinitions.CAM_PITCH, 0.0)
+        cam_X = Game.CAM_DIST * np.cos(a - 0.5 * np.pi) + self._board_center_X
+        cam_Z = Game.CAM_DIST * np.sin(a - 0.5 * np.pi) + self._board_center_Z
+        self._engine.set_cam(cam_X, Game.CAM_HEIGHT, cam_Z, -a, Game.CAM_PITCH, 0.0)
         self._cam_angle = a
 
     def animate_cam(self, t):
@@ -193,8 +205,8 @@ class Game:
 
     def set_level(self, level):
         self._level = level
-        self._tick_time = GlobalDefinitions.LEVEL_TICK_TIME[self._level]
-        self._score_fact = GlobalDefinitions.LEVEL_SCORE_FACT[self._level]
+        self._tick_time = Game.LEVEL_TICK_TIME[self._level]
+        self._score_fact = Game.LEVEL_SCORE_FACT[self._level]
 
     def level(self):
         return self._level
@@ -203,10 +215,10 @@ class Game:
         for e in self._elements:
             # render only visible sides
             D = e.Y > 0 and self._board[e.X, e.Y - 1, e.Z] == 0
-            U = e.Y == GlobalDefinitions.BOARD_HEIGHT - 1 or self._board[e.X, e.Y + 1, e.Z] == 0
-            N = e.Z == GlobalDefinitions.BOARD_SIZE  - 1 or self._board[e.X, e.Y, e.Z + 1] == 0
+            U = e.Y == Game.BOARD_HEIGHT - 1 or self._board[e.X, e.Y + 1, e.Z] == 0
+            N = e.Z == Game.BORAD_SIZE - 1 or self._board[e.X, e.Y, e.Z + 1] == 0
             S = e.Z == 0 or self._board[e.X, e.Y, e.Z - 1] == 0
-            E = e.X == GlobalDefinitions.BOARD_SIZE  - 1 or self._board[e.X + 1, e.Y, e.Z] == 0
+            E = e.X == Game.BORAD_SIZE - 1 or self._board[e.X + 1, e.Y, e.Z] == 0
             W = e.X == 0 or self._board[e.X - 1, e.Y, e.Z] == 0
 
             # shade shape projection on floor
@@ -218,8 +230,8 @@ class Game:
             self._engine.render(e.box, DOWN=D, UP=U, NORTH=N, SOUTH=S, EAST=E, WEST=W, SUP=shadow)
 
     def render_floor(self):
-        for i in range(GlobalDefinitions.BOARD_SIZE ):
-            for j in range(GlobalDefinitions.BOARD_SIZE ):
+        for i in range(Game.BORAD_SIZE):
+            for j in range(Game.BORAD_SIZE):
                 shadow = 1.0
                 if self._running:
                     for x, y, z in self._shape.iterate():
@@ -234,9 +246,9 @@ class Game:
     def render_gui(self):
         # display score
         if self._running:
-            frame = GUIRect(50, 35, 100, 30, Color(0,0,0))
+            frame = GUIRect(50, 35, 100, 30, Color(200, 200, 200))
             self._engine.render_gui(frame)
-            text = GUIText("Score: %d" % self._score, 100, 50, 14, Color(255, 255,255))
+            text = GUIText("Score: %d" % self._score, 100, 50, 14, Color(0, 0, 0))
             self._engine.render_gui(text)
 
         # display menus
@@ -257,9 +269,9 @@ class Game:
 
     @staticmethod
     def in_board(x, y, z):
-        return 0 <= x < GlobalDefinitions.BOARD_SIZE  and \
-               0 <= y < GlobalDefinitions.BOARD_HEIGHT and \
-               0 <= z < GlobalDefinitions.BOARD_SIZE 
+        return 0 <= x < Game.BORAD_SIZE and \
+               0 <= y < Game.BOARD_HEIGHT and \
+               0 <= z < Game.BORAD_SIZE
 
     def move(self, dX, dY, dZ):
         self.remove_shape()
@@ -286,8 +298,8 @@ class Game:
     def update_score(self):
         # find which surfaces we should remove
         remove = list()
-        surface = GlobalDefinitions.BOARD_SIZE  * GlobalDefinitions.BOARD_SIZE 
-        for s in range(GlobalDefinitions.BOARD_HEIGHT):
+        surface = Game.BORAD_SIZE * Game.BORAD_SIZE
+        for s in range(Game.BOARD_HEIGHT):
             if np.sum(self._board[:, s, :]) == surface:
                 remove.append(s)
 
@@ -298,9 +310,9 @@ class Game:
         # remove surfaces
         while remove:
             s = remove.pop(0)
-            for x, y, z in product_idx((GlobalDefinitions.BOARD_SIZE , GlobalDefinitions.BOARD_HEIGHT - s - 1, GlobalDefinitions.BOARD_SIZE )):
+            for x, y, z in product_idx((Game.BORAD_SIZE, Game.BOARD_HEIGHT - s - 1, Game.BORAD_SIZE)):
                 self._board[x, s + y, z] = self._board[x, s + y + 1, z]
-            self._board[:, GlobalDefinitions.BOARD_HEIGHT - 1, :] = np.zeros((GlobalDefinitions.BOARD_SIZE , GlobalDefinitions.BOARD_SIZE ))
+            self._board[:, Game.BOARD_HEIGHT - 1, :] = np.zeros((Game.BORAD_SIZE, Game.BORAD_SIZE))
             n_elements = list()
             for e in self._elements:
                 if e.Y != s:
@@ -313,12 +325,12 @@ class Game:
 
     # find a shape that can fit current head space
     def generate_shape(self):
-        color = choice(self.assets.COLORS)
-        shapes = list(self.assets.SHAPES)
+        color = choice(COLORS)
+        shapes = list(SHAPES)
         shuffle(shapes)
         while shapes:
             s = shapes.pop()
-            s_y = GlobalDefinitions.BOARD_HEIGHT - s.shape[1]
+            s_y = Game.BOARD_HEIGHT - s.shape[1]
             self._shape = Shape(s, color, 1, s_y, 1)
             collision = False
             for x, y, z in self._shape.iterate():
@@ -383,10 +395,3 @@ class Game:
             fps += 1
 
 
-def run():
-    game = Game(550, 700)
-    game.start()
-    return 0
-
-if __name__ == "__main__":
-    sys.exit(run())

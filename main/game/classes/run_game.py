@@ -4,6 +4,7 @@ from game.definitions.global_definitions import GlobalDefinitions
 from game.classes.engine import GUI, GUIText, GUIRect, Color
 from tkinter import Tk, Canvas
 import tkinter as tk
+
 class GameTetris3D:
     def __init__(self, screen):
         self.screen = screen
@@ -137,41 +138,26 @@ class HighScore(Menu):
         return self
 
 
+
 class StartGame(Menu):
     LEVEL_STR = ("easy", "medium", "hard")
 
     def __init__(self, game):
         self._game = game
         self._help = Help(self)
-        self.bool_button = True
 
     def draw(self, canvas, **kwargs):
         w, h = canvas.winfo_width(), canvas.winfo_height()
-        fw, fh = 550, 400
-        frame = GUIRect((w - fw) * 0.5, (h - fh) * 0.5, fw, fh, Color(0, 0, 0 ))
+        fw, fh = 440, 305
+        frame = GUIRect((w - fw) * 0.5, (h - fh) * 0.5, fw, fh, Color(250, 150, 150))
         frame.draw(canvas, **kwargs)
-        head = GUIText("Tetris 3D Computación Visual 2024 - I", w * 0.5, (h - fh) * 0.5 + 30, 30, Color(255, 255, 255))
+        head = GUIText(("Estas en el nivel (%s)" % (self._game.level())), w * 0.5, (h - fh) * 0.5 + 30, 30, Color(100, 100, 100))
         head.draw(canvas, **kwargs)
-        if w != 1 and h != 1 :
-            buttonStartGame = tk.Button(canvas, text="A jugar",width=10, height=2)
-            buttonStartGame.place(x= w * 0.45, y=h  * 0.35  + 100)
-            buttonInstructions = tk.Button(canvas, text="Ver instrucciones",width=10, height=2, command= self.showInstruccions(canvas, **kwargs))
-            buttonInstructions.place(x=w * 0.45, y= h * 0.35 + 150)
- 
-            
-    def showInstruccions(self,canvas, **kwargs):
-        print("entro a las instrucciones")
-        w, h = canvas.winfo_width(), canvas.winfo_height()
-        fh = 400
-        text = GUIText("El nivel actual del juego es%d (%s).\n\n"
-                       "<S> Start the game\n"
-                       "<1> Change game level to 1\n"
-                       "<2> Change game level to 2\n"
-                       "<3> Change game level to 3\n"
-                       "<H> Display help (please read if\n"
-                       "       it's your first time playing!)"
-                       % (self._game.level()+1, StartGame.LEVEL_STR[self._game.level()])
-                       ,w * 0.5, (h - fh) * 0.5 + 180, 18, Color(240, 220, 215))
+        text = GUIText("Presiona la letra S para comenzar a jugar\n"
+                    #    "<1> Change game level to 1\n"
+                    #    "<2> Change game level to 2\n"
+                    #    "<3> Change game level to 3\n"
+                       ,w * 0.5, (h - fh) * 0.5 + 180, 18, Color(100, 100, 100))
         text.draw(canvas, **kwargs)
 
     def key_press(self, key):
