@@ -51,7 +51,29 @@ class MenuInicial():
         print("¡Botón 2 presionado!")
         self.botonJugar.destroy()
         self.botonInstrucciones.destroy()
-        self.instrucciones = tk.Label(self.root, text="Aquí van las instrucciones...", bg="white", fg="black")
+        texto =  """
+        Comandos del Juego:
+
+        - Movimiento:
+            - Espacio: Mover rápido hacia abajo
+            - Flecha izquierda: Mover a la izquierda
+            - Flecha abajo: Mover hacia atrás
+            - Flecha derecha: Mover a la derecha
+            - Flecha arriba: Mover hacia adelante
+        - Rotación:
+            - s: Rotar en el eje X en dirección negativa
+            - w: Rotar en el eje X en dirección positiva
+            - a: Rotar en el eje Y en dirección negativa
+            - d: Rotar en el eje Y en dirección positiva
+            - q: Rotar en el eje Z en dirección negativa
+            - e: Rotar en el eje Z en dirección positiva
+        - Cámara:
+            - z: Rotar cámara a la izquierda
+            - c: Rotar cámara a la derecha
+        - Menús:
+            - p: Pausar/Despausar
+        """
+        self.instrucciones = tk.Label(self.root, text=texto, bg="white", fg="black",font=("Helvetica", 16))
         self.instrucciones.place(x=self.width * 0.25, y=self.height * 0.25, width=self.width * 0.5, height=self.height * 0.5)
         self.botonRegresarMenu.place(x=self.width * 0.1 + 900, y=self.height * 0.8 + 100)
 
