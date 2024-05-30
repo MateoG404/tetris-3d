@@ -33,6 +33,7 @@ class Game:
         self.init_board()
         self.init_game()
         self.init_menus()
+        self._level = 0  
 
     def init_screen(self, width, height):
 
@@ -57,6 +58,12 @@ class Game:
         - Menús:
             - p: Pausar/Despausar
         """
+
+        textLevel = """
+        Presiona O para aumentar el nivel
+        Presiona B para disminuir el nivel
+        """
+        
         # tkinter stuff
         self._root = tkinter.Tk()
         self._root.minsize(width, height)
@@ -65,6 +72,8 @@ class Game:
         self._frame.pack(fill=tkinter.BOTH, expand=True)
         self._canvas = tkinter.Canvas(self._frame)
         self._canvas.place(relwidth=1.0, relheight=1.0)
+        self._textLevel = Label(self._root, text=textLevel, justify=tk.LEFT, anchor='nw', bg="lightgray")
+        self._textLevel.place(relx=1.0, rely=0.0, anchor='ne')
         self._commands_label = Label(self._root, text=commands, justify=tk.LEFT, anchor='nw', bg="lightgray")
         self._commands_label.place(relx=1.0, rely=1.0, anchor='se')
         
@@ -80,7 +89,7 @@ class Game:
         self._interactive = True
         self._t = 0.0
 
-
+    
 
     def init_control(self):
         self._mouse_x = np.nan
@@ -113,6 +122,14 @@ class Game:
         self._fast = False
         self._running = False
         self._highscore = HighScoreTable(Game.HS_FILE)
+
+    def increase_level(self):
+        if self._level < len(Game.LEVEL_TICK_TIME) - 1:
+            self.set_level(self._level + 1)
+    
+    def decrease_level(self):
+        if self._level > 0:
+            self.set_level(self._level - 1)
 
     def init_menus(self):
         self._pause_menu = Pause()
@@ -195,14 +212,10 @@ class Game:
             ax, dr = Game.PITCH_ROLL_MAP[(self._dir + 1) % 4]
             self.rotate(ax, dr)
 
-        # if key.char == 'w':
-        #     self._engine.move_cam_relative(0.0, 0.0, 0.2)
-        # elif key.char == 's':
-        #     self._engine.move_cam_relative(0.0, 0.0, -0.2)
-        # elif key.char == 'a':
-        #     self._engine.move_cam_relative(-0.2, 0.0, 0.0)
-        # elif key.char == 'd':
-        #     self._engine.move_cam_relative(0.2, 0.0, 0.0)
+        if key.char == 'o':
+            self.increase_level()
+        if key.char == 'b':
+            self.decrease_level()
 
     def key_release(self, key):
         if key.keysym == "space":
@@ -283,6 +296,7 @@ class Game:
             self._engine.render_gui(self._menu)
         
         self._commands_label.lift()
+        self._textLevel.lift()
 
     def rotate(self, axis, n):
         self.remove_shape()
