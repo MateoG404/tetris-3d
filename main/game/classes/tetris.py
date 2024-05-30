@@ -377,10 +377,7 @@ class Game:
         if not self.move(0, -1, 0):
             self.update_score()
             if not self.generate_shape():
-                next_menu = NewHighScore(self._hs_menu, self._score, self._highscore) \
-                    if self._highscore.is_high_score(self._score) \
-                    else self._hs_menu
-                self._menu = GameOver(next_menu)
+                self._menu = GameOver()
                 self._show_menu = True
                 self._running = False
 
