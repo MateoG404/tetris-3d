@@ -4,6 +4,7 @@ from game.definitions.global_definitions import GlobalDefinitions
 from game.classes.engine import GUI, GUIText, GUIRect, Color
 from tkinter import Tk, Canvas
 import tkinter as tk
+
 class GameTetris3D:
     def __init__(self, screen):
         self.screen = screen
@@ -47,13 +48,17 @@ class GameOver():
         frame.draw(canvas, **kwargs)
         head = GUIText("Game Over", w * 0.5, (h - hf) * 0.5 + 35, 40, Color(100, 100, 100))
         head.draw(canvas, **kwargs)
-        cont = GUIText("<SPACE> para reiniciar", w * 0.5, (h - hf) * 0.5 + 85, 15, Color(100, 100, 100))
+        cont = GUIText("<e> para salir ", w * 0.5, (h - hf) * 0.5 + 85, 15, Color(100, 100, 100))
         cont.draw(canvas, **kwargs)
 
     def key_press(self, key):
-        if ord(key) == 32:
-            for widget in tk._default_root.winfo_children():
-                widget.destroy()
+        print("tecla", key)
+        if key and ord(key) == 101:  
+            print("tecla presionaadddd")
+            root = tk._default_root
+            if root:
+                root.destroy()
+            sys.exit(0)
         return self
 
 

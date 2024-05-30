@@ -10,9 +10,7 @@ import os
 def run():
     menu = MenuInicial(1200, 800)
     menu.start()
-    #game = Game(1200, 800)
-    #game.start() 
-    
+
 
 if __name__ == "__main__":
     run()
