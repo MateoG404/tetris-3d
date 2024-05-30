@@ -177,6 +177,29 @@ class StartGame(Menu):
 
 class Help(Menu):
     def __init__(self, next_menu):
+        self.text = """
+        Comandos del Juego:
+        - Movimiento:
+            - Espacio: Mover rápido hacia abajo
+            - Flecha izquierda: Mover a la izquierda
+            - Flecha abajo: Mover hacia atrás
+            - Flecha derecha: Mover a la derecha
+            - Flecha arriba: Mover hacia adelante
+        - Rotación:
+            - s: Rotar en el eje X en dirección negativa
+            - w: Rotar en el eje X en dirección positiva
+            - a: Rotar en el eje Y en dirección negativa
+            - d: Rotar en el eje Y en dirección positiva
+            - q: Rotar en el eje Z en dirección negativa
+            - e: Rotar en el eje Z en dirección positiva
+        - Cámara:
+            - z: Rotar cámara a la izquierda
+            - c: Rotar cámara a la derecha
+        - Menús:
+            - p: Pausar/Despausar
+        """
+        self.frame = GUIRect(50, 50, 300, 200, Color(200, 200, 200))
+        self.text_widget = GUIText(self.text, 100, 75, 12, Color(0, 0, 0))
         self._next_menu = next_menu
 
     def draw(self, canvas, **kwargs):

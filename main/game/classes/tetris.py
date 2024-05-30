@@ -9,6 +9,7 @@ from game.utilities.utils import *
 from game.definitions.global_definitions import GlobalDefinitions
 from game.definitions.assets import SHAPES, COLORS
 import os 
+from tkinter import Label
 
 class Game:
     BORAD_SIZE = 4
@@ -34,6 +35,28 @@ class Game:
         self.init_menus()
 
     def init_screen(self, width, height):
+
+        commands = """
+        Recuerda los comandos
+        - Movimiento:
+            Espacio: Mover rápido hacia abajo
+            ← Mover a la izquierda
+            ↓ Mover hacia atrás
+            → Flecha derecha: Mover a la derecha
+            ↑ Flecha arriba: Mover hacia adelante
+        - Rotación:
+            s: Rotar en el eje X en dirección negativa
+            w: Rotar en el eje X en dirección positiva
+            a: Rotar en el eje Y en dirección negativa
+            d: Rotar en el eje Y en dirección positiva
+            q: Rotar en el eje Z en dirección negativa
+            e: Rotar en el eje Z en dirección positiva
+        - Cámara:
+            - z: Rotar cámara a la izquierda
+            - c: Rotar cámara a la derecha
+        - Menús:
+            - p: Pausar/Despausar
+        """
         # tkinter stuff
         self._root = tkinter.Tk()
         self._root.minsize(width, height)
@@ -41,8 +64,10 @@ class Game:
         self._frame = tkinter.Frame()
         self._frame.pack(fill=tkinter.BOTH, expand=True)
         self._canvas = tkinter.Canvas(self._frame)
-        self._canvas.pack(fill=tkinter.BOTH, expand=True)
-
+        self._canvas.place(relwidth=1.0, relheight=1.0)
+        self._commands_label = Label(self._root, text=commands, justify=tk.LEFT, anchor='nw', bg="lightgray")
+        self._commands_label.place(relx=1.0, rely=1.0, anchor='se')
+        
         # engine stuff
         self._engine = Engine(self._canvas)
 
@@ -54,6 +79,8 @@ class Game:
         self._target_cam_angle = self._cam_angle
         self._interactive = True
         self._t = 0.0
+
+
 
     def init_control(self):
         self._mouse_x = np.nan
@@ -254,6 +281,8 @@ class Game:
         # display menus
         if self._show_menu:
             self._engine.render_gui(self._menu)
+        
+        self._commands_label.lift()
 
     def rotate(self, axis, n):
         self.remove_shape()
